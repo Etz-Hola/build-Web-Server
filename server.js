@@ -67,7 +67,7 @@ const server = http.createServer((req, res) => {
     if (!extension && req.url.slice(-1) !== '/') filepath += '.html'
     const fileExists = fs.existsSync(filepath);
     if (fileExists) {
-        //server the file
+        serveFile(filepath, contentType,res)
     } else {
         switch(path.parse(filepath)) {
             case 'old-page.html':
@@ -79,8 +79,8 @@ const server = http.createServer((req, res) => {
                 res.end();
                 break;
             default:
-                // serveFile(path.join(__dirname)
-                
+            serveFile(path.join(__dirname, 'views', '400.html'), res);
+
         } 
     }
 
