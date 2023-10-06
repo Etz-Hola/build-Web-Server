@@ -7,21 +7,47 @@ const fsPromises = require('fs').promises;
 
 
 const logEvents = require('./logEvents');
+
+
 const EventEmitter = require('events');
 class MyEmitter extends EventEmitter { }; // taken directly from the docs
-const PORT = process.env.PORT || 3400;
+
+
 
 // intialize object
 
 const myEmitter = new MyEmitter();
+myEmitter.on("log", (msg, filename) => logEvents(msg, filename));
+
+const PORT = process.env.Port || 4000
+
+
+
 
 const serveFile = async(filepath, contentType, response) => {
     try {
-        const data = await fsPromises.readFile(filepath, 'utf8');
-        response.writeHead(200, {'Content-Type': contentType});
-        response.end(data);
+        const rawData = await fsPromises.readFile(
+            filepath, 
+            !contentType.includes("image") ? 'utf8' :
+            ""
+            );
+        !contentType.includes("image") ? "utf8" : ""
+
+
+        const data = contentType === "application/json"
+        ? JSON.parse(rawData) : rawData
+        response.writeHead(
+            filepath.includes("404.html") ? 404 : 200,
+            {'content-type': contentType} 
+            );
+        response.end(
+            contentType === "application/json"
+            ? JSON.stringify(data) : data
+        );
     }catch (err) {
         console.error(err);
+        myEmitter.emit("log", `${err.name} : ${err.message}, "errLog.txt"`)
+
         response.statusCode = 500;
         response.end();
     }
@@ -29,11 +55,12 @@ const serveFile = async(filepath, contentType, response) => {
 
 const server = http.createServer((req, res) => {
     console.log(req.url, req.method);
+    myEmitter.emit("log", `${req.url}\t${req.method}, "reqLog.txt"`);
 
     // Setting the content-type
     const extension = path.extname(req.url);
     let contentType;
-
+    
     switch (extension) {
         case '.css':
             contentType = 'text/css';
