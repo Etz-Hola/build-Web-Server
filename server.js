@@ -85,7 +85,8 @@ const server = http.createServer((req, res) => {
                 res.end()
                 break;
             default:
-                //serveFile(path.join(__dirname, 'views', '404.html'), 'text/html', res)
+                // serve the 404 response we serve a 404 response by the code below
+                serveFile(path.join(__dirname, 'views', '404.html'), 'text/html', res)
         }
     }
 });
