@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
     } else {
         //404
         //301 redirect
-        //
+        //to get 404, 301 we need to use switch statement which is in the bottom
 
         console.log(path.parse(filepath));
         switch (path.parse(filepath).base) {
